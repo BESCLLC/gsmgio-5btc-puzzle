@@ -378,6 +378,15 @@ That is a small number next to the 335M+ candidates the wider community has
 published as negative results. Assembling the tokens is not the answer; partA and
 partC are where the remaining information is.
 
+**Against the page source** (archived in [`solver/source/`](./solver/source), and
+verified byte-identical to the transcription above): the same sweep now runs
+against the Cosmic Duality blob too — 1344 bytes, salt `2d3f6fe06dc950e6`, 83 AES
+blocks, plaintext 1313-1328 bytes — for 2,825,600 decryptions across both blobs,
+still zero. Additionally eliminated: all 725,760 digit assignments for the
+block's own decode convention applied to partA and partC (exhaustive, not
+sampled); "hash this page's text" in 12 readings; unkeyed 9x9 Polybius; and
+straddling checkerboard/VIC with the alphabet phase 3.2.2 already used.
+
 
 # Additional hints
 - There's a hint from the creator of the puzzle on Decentraland:

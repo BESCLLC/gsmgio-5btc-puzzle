@@ -23,6 +23,13 @@ Run everything from inside this directory (`cd solver`). Only dependency:
 | `sweep.py` | two-stage filter: PKCS#7 padding, then plaintext plausibility |
 | `run_salphaseion.py` | the actual sweep over the candidate space |
 | `analyze.py` | structural statistics on the still-undecoded 570-symbol segment |
+| `source/` | the verbatim page source: the SalPhaseIon symbol stream and the full Cosmic Duality blob |
+| `pagehash.py` | rebuilds both blobs from the page and tests the "hash this page's text" reading |
+| `run_sweeps.py` | the candidate sweep, against **both** blobs |
+| `digitmap.py` | exhausts all 9! digit assignments for the block's own decode convention |
+| `checkerboard.py` | straddling checkerboard / VIC, the cipher the puzzle already used in 3.2.2 |
+| `polybius.py` | 9x9 coordinate-pair hypothesis for partC |
+| `wordscore.py`, `english.py` | word-segmentation scorer, calibrated against known puzzle plaintexts |
 
 ## Why the oracle is cheap
 
@@ -90,3 +97,57 @@ answer — the answer is presumably a Matrix quote, and the space of "last words
 before the Architect's choice" is large and unconstrained). Until partA/partC
 give up a constraint, this is unguided search, and unguided search over a SHA-256
 password space does not terminate.
+
+
+## Round 2: with the real page source
+
+The page source was retrieved by hand (`gsmg.io` is blocked from this
+environment) and archived under `source/`. Three things came out of it:
+
+**The README transcription is byte-perfect.** All 895 symbols match the page
+exactly, and the README stream is an exact prefix of the real 1075-symbol
+stream. Transcription error was never the problem.
+
+**There is no grid.** The block lives in a `<textarea>`; the rows in the
+screenshot are soft-wrap, not layout. Column-major and spiral reading orders are
+therefore not a thing to chase.
+
+**The Cosmic Duality blob is now here in full** — 1792 base64 chars, 1344 bytes,
+`Salted__` + salt `2d3f6fe06dc950e6` + 1328 bytes = 83 AES blocks, so its
+plaintext is 1313-1328 bytes. That is a paragraph of text, not a bare key.
+`run_sweeps.py` now runs the whole candidate space against both blobs:
+2,825,600 decryptions total, zero plausible plaintexts.
+
+### Eliminated
+
+- **The block's own decode convention, exhaustively.** `digitmap.py` tries all
+  9! digit assignments under both digit sets (725,760 per run) for the
+  letters→digits→decimal→base 16→ASCII decode that produced
+  `lastwordsbeforearchichoice` and `thispassword`. Nothing above 75% lowercase
+  for either partA or partC. This convention is *dead* for those two runs — not
+  spot-checked, exhausted.
+- **"Our first hint is your last command" read as HASHTHETEXT applied to this
+  page.** `pagehash.py`: 12 readings of "the text" x 5 normalisations x 4
+  password forms x 2 KDFs x 2 blobs. Zero.
+- **Unkeyed 9x9 Polybius** for partC (`polybius.py`).
+- **Straddling checkerboard / VIC** with the phase-3.2.2 alphabet, a plain
+  alphabet and an ETAOIN alphabet, every row pair, three digit mappings — 810
+  clean decodes per run, nothing above the noise threshold.
+
+### A scoring trap worth knowing about
+
+The first checkerboard pass reported six "hits" scoring in the thousands. They
+were artifacts: an ETAOIN-ordered alphabet maps frequent digits to frequent
+letters, so the output is a wall of E/T/A/O/I/N/S/R that sails through
+chi-square while containing no words. `wordscore.py` replaces that with maximum
+word-coverage segmentation, calibrated on this puzzle's own plaintexts:
+
+| text | score |
+| --- | --- |
+| `lastwordsbeforearchichoice` | 0.43 |
+| `theflowerblossomsthrough...` | 0.34 |
+| the ETAOIN wall that fooled the old scorer | 0.16 |
+| random letters | 0.08 |
+
+Threshold 0.28. Re-scored, every checkerboard and Polybius result falls to
+0.0-0.2. Any future search should use this scorer, not letter frequency.
