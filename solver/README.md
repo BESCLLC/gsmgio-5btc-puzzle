@@ -29,6 +29,7 @@ Run everything from inside this directory (`cd solver`). Only dependency:
 | `digitmap.py` | exhausts all 9! digit assignments for the block's own decode convention |
 | `checkerboard.py` | straddling checkerboard / VIC, the cipher the puzzle already used in 3.2.2 |
 | `polybius.py` | 9x9 coordinate-pair hypothesis for partC |
+| `hashtheruns.py` | hashes the undecoded runs under all 9! digit mappings, against both blobs |
 | `wordscore.py`, `english.py` | word-segmentation scorer, calibrated against known puzzle plaintexts |
 
 ## Why the oracle is cheap
@@ -129,6 +130,12 @@ plaintext is 1313-1328 bytes. That is a paragraph of text, not a bare key.
 - **"Our first hint is your last command" read as HASHTHETEXT applied to this
   page.** `pagehash.py`: 12 readings of "the text" x 5 normalisations x 4
   password forms x 2 KDFs x 2 blobs. Zero.
+- **Hashing the undecoded runs themselves**, under every possible digit mapping
+  (`hashtheruns.py`). If "hash the text" means the runs rather than the page, and
+  the mapping is non-alphabetical, the string to hash is the mapped decimal form.
+  All 9! mappings x both digit sets x 4 pieces (partA, partC, and both
+  concatenations) x single/double SHA-256 x 2 KDFs x 2 blobs = **23,224,320
+  decryptions**. Zero.
 - **Unkeyed 9x9 Polybius** for partC (`polybius.py`).
 - **Straddling checkerboard / VIC** with the phase-3.2.2 alphabet, a plain
   alphabet and an ETAOIN alphabet, every row pair, three digit mappings — 810
