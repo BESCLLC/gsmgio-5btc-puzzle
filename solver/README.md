@@ -736,3 +736,71 @@ already-open door and can only fail. So this is *untested*, not disproved, and
 it becomes testable the moment the missing blob between b45a and Cosmic appears.
 The 121 hypothesis and the missing-link gap are complementary: if that blob
 turns up, these 48 bytes are the first thing to try on it.
+
+## Round 16: the entropy proof fails its control; "another door" is confirmed
+
+### The entropy argument does not go through
+
+Claim: A/C sit at near-random base-9 entropy, therefore no rearrangement can
+yield text, therefore the key must be external.
+
+The z-segments are the control — **known** to decode to English by this exact
+scheme:
+
+| run | n | alphabet | IC | H | % of max |
+| --- | --- | --- | --- | --- | --- |
+| z-seg → `lastwordsbeforearchichoice` | 63 | 10 | 0.0988 | 3.222 | **97.0%** |
+| z-seg → `thispassword` | 29 | 9 | 0.1182 | 2.947 | 93.0% |
+| partA | 91 | 9 | 0.1509 | 2.882 | 90.9% |
+| partC | 570 | 9 | 0.1181 | 3.120 | 98.4% |
+
+A segment that decodes to plain English sits at **97% of maximum entropy —
+higher than partA**. Base conversion destroys the plaintext's frequency
+structure, so order-0 symbol entropy cannot detect an English payload at all.
+
+What survives: a **bijective** decode preserves total entropy, and 91 × 2.882 =
+262 bits in 36 bytes is 7.3 bits/byte, which cannot be 36 English characters
+(~54 bits). Bijective decodes to English are genuinely ruled out. But
+**selection, zeroing and aggregation are lossy and escape the argument entirely**
+— and those are precisely the operations the creator's hint names.
+
+### The 21 Telegram blobs contain no new authentic object
+
+| | |
+| --- | --- |
+| authentic | 4 — Sal 80B, b45a 80B, Cosmic, Phase 2 / 3.2 |
+| corrupted copies | 2 — salt `bab585348552415f` |
+| solver artifact | 1 — salt `696d736563757265` = ASCII `imsecure` |
+| truncated first lines | 14 at 32B — still need re-extraction |
+
+The `bab585348552415f` pair is a **mistyped paste of SalPhaseIon**: `+6` typed for
+`86` and `/X` for `X`, which shifts every character after position 21. Its salt
+differs from `3ab585348552415d` in only the first and last byte.
+
+### Provenance of the hints
+
+`in front of your eyes` is **not attributable to the creator** in this dump.
+Every occurrence is `[Deleted Account]` quoting it. In Jrk's own messages the
+phrase appears once, in a 2016 anecdote about the DAO — unrelated. The `key I's`
+reading therefore rests on an unsourced quote.
+
+Jrk's verified statements, in his own words:
+
+1. *"We've seen prime numbers being mentioned; well, that is definitely an aspect
+   which is required to proceed. Furthermore, along the way, some characters need
+   to be 'zeroed out'."*
+2. *"The previous 'there is another door hint' is still a thing. We're not sure if
+   anyone has found another door so far, and we can't check that."*
+3. *"Roses are White but often Red. Yellow has a number and so does Blue… the
+   rabbits nest may contain a whole lot more."*
+4. *"**Blueprint** is sort of the leading list at this point."*
+
+**(2) is independent creator confirmation of the missing link.** It was derived
+here from key-derivation failures alone — the 7-token XOR not producing
+`6ac438fa…`, `WIF(K_S1)` not opening Cosmic — and the creator says outright that
+an unfound door exists.
+
+**(4) is worth a second look.** The community's `yellowblueprimes` may be a
+mis-parse: Jrk says *Blueprint* is the leading list, and *"Yellow has a number and
+so does Blue."* `yellow blue prime s` versus `yellow blueprint s` is one
+space away.
