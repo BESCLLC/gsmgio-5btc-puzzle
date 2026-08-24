@@ -659,3 +659,28 @@ is the item outstanding from the round-6 retraction. `run_running2.py` sweeps it
 properly: all 9! alphabet orderings × 22 keys from the 7×13 grid × 3 combining
 ops × partC forwards and reversed, scoring the **entire** decode rather than a
 structurally impossible leading-byte criterion.
+
+## Round 14: the 91/91 match is coincidence; "key I's" tested
+
+**Statistical independence.** Mutual information between partA's symbols and the
+VIC plaintext's letters: observed 1.1384 bits, shuffled mean 1.1119, 95th
+percentile 1.2346, **p = 0.344**. (MI is inflated at this sample size — 91 pairs
+over 9×21 cells — so the shuffled baseline is the thing to compare against.)
+
+Stated precisely, since the scope matters:
+
+- **every letter-only function is dead** — substitution, bucketing, any scheme
+  where the same letter always yields the same symbol (17 of 21 letters map to
+  multiple symbols; `E` maps to seven of nine)
+- **every periodic position function is dead** — the `(PT − A) mod 26` stream has
+  25 distinct values of 26 and repeats at no period below 25
+- what survives is only an *aperiodic* position-dependent encoding driven by a
+  third source, which is unfalsifiable until someone names the source
+
+So the 91 = T₁₃ = |VIC| coincidence is a coincidence unless that source appears.
+
+**"key I's" tested.** Deleting the i's, mapping `i → 0`, and taking the
+characters before/after each i, on both runs: everything at the 10.2% lowercase
+/ 37.1% printable random baseline. One incidental confirmation — partA with its
+i's deleted decodes to exactly **36 bytes**, matching the round-10 capacity
+prediction.
