@@ -804,3 +804,41 @@ an unfound door exists.
 mis-parse: Jrk says *Blueprint* is the leading list, and *"Yellow has a number and
 so does Blue."* `yellow blue prime s` versus `yellow blueprint s` is one
 space away.
+
+## Round 17: BNCC-8B trit fractionation
+
+The 2020 National Cipher Challenge Part 8B takes five Baudot characters as a
+5×5 bit matrix, rotates it 90°, and reads the rows back. Since 9 = 3², the radix
+analogue here is exact: one symbol is two trits, two symbols make a 2×2 trit
+matrix, and the dihedral symmetries of that matrix are the transform family.
+`trit.py` implements all eight, under both trit-significance conventions.
+
+**Correction to the premise.** The construction was proposed as pairing `A[i]`
+with `C[i]` for 91 aligned pairs and no leftover. partA is 91 symbols and
+**partC is 570** — verified byte-identical to the page source in round 8. There
+is no position-by-position alignment. Pairs are therefore taken within each run,
+with `A×C[:91]`, `A×C[-91:]` and `A×C[::6][:91]` included as cross variants.
+
+**Result:** 80 derived streams, each tried raw / SHA-256 / double-SHA-256 as a
+password against the four authentic blobs under both KDFs. 1,440 decryptions,
+**6 with valid padding against 5.6 expected by chance**, none containing a
+decodable key. (Sanity: the identity operation reproduces partA exactly.)
+
+### Why it had to come out this way
+
+The dihedral transform is a **bijection on symbol pairs**, so it preserves total
+entropy — measured deltas are +0.000 to +0.136 bits/symbol, i.e. nothing. The
+round-16 bound therefore still binds after any rotation:
+
+    partA:  91 × 2.882 =  262 bits into  36 bytes = 7.3 bits/byte
+    partC: 570 × 3.120 = 1778 bits into 226 bytes = 7.9 bits/byte
+
+English is ~1.5 bits/char. **No bijective transform of A or C — rotation,
+transposition, permutation, base change — can decode to text, before or after
+fractionation.** This is a general result, not a per-attempt failure, and it
+retires the entire family in one step.
+
+What it leaves standing: fractionation as a *stage* before a **lossy** operation.
+Selection, zeroing and aggregation are the only things that can lower entropy,
+and "some characters need to be zeroed out" is Jrk's authenticated wording.
+The productive order is therefore transform → **then** zero, not transform alone.
