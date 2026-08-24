@@ -399,3 +399,38 @@ simply the maximum a 31-byte sample can show, meaning only that all 31 bytes are
 distinct (P ≈ 0.15 for random bytes). Both regions are consistent with random.
 Further, 28 of the 31 values exceed 34, so they cannot be block indices into a
 35-block field. The header is not evidently a selector table. Withdrawn.
+
+## Round 8: the Telegram dump has seven new salts — and they are all truncated
+
+A Telegram export search for `U2FsdGVk` surfaced blobs with **seven salts that
+appear nowhere in the puzzle chain**:
+
+    aa46dd00cc230e6c   ab583398aaa4500d   e2991cdcd2c957f9   34a5901a53543d6a
+    073f31b317bd0cf2   4a4a51c1562d7db7   4c664c282939f61a   4f37245e63fdb78a
+
+Every one presented as exactly 32 bytes of ciphertext — which is the tell. Check
+it against blobs whose true size is known:
+
+| blob | real ciphertext | as captured |
+| --- | --- | --- |
+| Phase 2 | 656 B | 32 B |
+| Cosmic | 1328 B | 32 B |
+| Phase 3.2 | 2432 B | 32 B |
+
+All three collapse to 32 bytes, because OpenSSL wraps base64 at 64 characters
+and a line-oriented grep returns only the first line. The new salts are real
+blobs; what was captured is their opening line.
+
+This also means none of them *could* have opened, whatever key was tried: a
+79-byte record needs 80 bytes of ciphertext = 5 blocks = 128 base64 characters
+across two lines. Testing all eight recovered keys × WIF/hex/raw × both KDFs
+against the truncated captures gave 2 padding-valid results out of 832, against
+3.25 expected by chance — pure noise, as expected.
+
+`tg_extract.py` re-extracts with continuation lines joined, tolerating `<br>`,
+`<div>`, `<p>` and entity separators, and keeps the longest capture per salt.
+Self-tested: it recovers Phase 2 at 656 B, Cosmic at 1328 B, Phase 3.2 at
+2432 B and b45a at 80 B, and survives HTML markup interleaved between lines.
+
+**Target:** a blob whose ciphertext is 80 bytes (5 blocks), opening under
+`WIF(K_S1)` with the MD5 KDF.
