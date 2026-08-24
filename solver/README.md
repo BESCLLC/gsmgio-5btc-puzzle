@@ -894,3 +894,65 @@ noise. The one informative number, the mismatch count on the 14×14 matrix, is
 98 of 196 against **98.0 expected** for a random binary grid with 101 ones —
 +0.01σ. Six random grids reproduce the whole pattern, including a random 7×13
 that also gives exactly 80 mismatches, matching partA.
+
+## Round 20: the hint corpus, decoded — and a correction
+
+### Message 8446 is authentic, and I was wrong about it
+
+Jrk, 2023-02-23, posted 161 bytes of binary in which **every byte ends in
+`110`** — the bits are reversed. Reversing each byte and then the whole string:
+
+    yellowblueprimes matrixsumlist lastwordsbeforearchichoice yinyang
+    we wont give away the password its in front of your eyes but youre
+    not seeing it very last step is a true giveaway promised
+
+**Round 16 was wrong.** I said "in front of your eyes" was not attributable to
+the creator because every plaintext occurrence came from a `[Deleted Account]`.
+It came from Jrk himself, encoded. The quoters were relaying a real decode. The
+`key I's` reading therefore rests on authentic material, and `yellowblueprimes`
+and `yinyang` are creator tokens, not community inventions.
+
+Two of the four tokens are *verified* block objects — `matrixsumlist` is the
+104-bit abba run, `lastwordsbeforearchichoice` is the 63-symbol z-segment — so
+the list names block objects, which makes `yellowblueprimes` the natural
+candidate for what partA decodes to.
+
+### But partA does not decode to it
+
+`yellowblueprimes` = `79656c6c6f77626c75657072696d6573` =
+`161363208564062747188122896626944402803`, 39 decimal digits.
+
+- **By dropping characters:** all 725,760 digit assignments tested for the
+  target as a subsequence of partA's digits. **Zero.** (Dropping also cannot
+  produce the target's `0`s when digits run 1–9.)
+- **By leading-zero truncation** — zeroing leading characters shortens the
+  number, so the final 39 symbols would have to map onto the target directly:
+  all 53 windows tested, injective and non-injective. **Zero.**
+
+So if `yellowblueprimes` is partA's content, the mechanism is not the block's
+decimal→hex→ASCII convention at all.
+
+The competing reading is that it is an **instruction**, which fits Jrk's own
+poem — *"Yellow has a number and so does Blue"*. The 14×14 matrix has 95 yellow
+and 101 blue cells; 101 is prime, 95 is not, and 101 is also `matrixsumlist`.
+
+### Message 53342, 2025-12-31
+
+Plain ASCII: *"Happy new year! Make the best of everything. Oh, and here's a
+'tiny hint' &lt;3."* — preceded by five messages containing `.` `..` `...` `....`
+`.....`. The dots are unexplained and are the most recent creator artifact.
+
+### Creator statements that are concrete and untested
+
+| msg | statement |
+| --- | --- |
+| 1837 | "Only -41,-17 matters" (Decentraland coordinates) |
+| 6884 | "another door might be found on {1},{4},{21}" |
+| 32671 | "You only need the last number of pi and it might get you somewhere" |
+| 32613 | "I think I'll be going for ASCII 127 myself" |
+| 4105 | "First or zero" |
+| 39237 | of yinyang: **"It's the next phase, but I await the day someone finally gets there"** |
+
+That last one matters: as of 2025-04-28 the creator states **nobody has reached
+yinyang**. Whatever yinyang is, it sits beyond where anyone has got — which is
+consistent with the missing door this repo located from key-derivation failures.
