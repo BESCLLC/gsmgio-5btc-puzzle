@@ -487,3 +487,51 @@ One more constraint from the verified password: `yellowblueprimes` cannot preced
 `matrixsumlist` in the SalPhaseIon password, because that password is confirmed
 and begins with `matrixsumlist`. Whatever `yellowblueprimes` keys, it is not that
 step.
+
+## Round 10: carrier efficiency kills the mapping — and says what partA/partC hold
+
+The proposed reading is that the creator's hint list names what each carrier
+decodes to: `dbbi…`(partA) → `yellowblueprimes`, `abba` → `matrixsumlist`,
+z-seg → `lastwordsbeforearchichoice`, `faed…`(partC) → `yinyang`.
+
+Two of those are verified, so the shape of the idea is right. But measure the
+**encoding efficiency** of the verified carriers:
+
+| carrier | symbols | base | capacity | decodes to | used | efficiency |
+| --- | --- | --- | --- | --- | --- | --- |
+| abba run | 104 | 2 | 104.0 bits | `matrixsumlist` | 104 bits | **100.0%** |
+| abba run | 40 | 2 | 40.0 bits | `enter` | 40 bits | **100.0%** |
+| z-seg | 63 | 10 | 209.3 bits | `lastwordsbeforearchichoice` | 208 bits | **99.4%** |
+| z-seg | 29 | 10 | 96.3 bits | `thispassword` | 96 bits | **99.7%** |
+
+Every verified carrier is packed essentially full. Now the proposal:
+
+| carrier | symbols | capacity | proposed | efficiency |
+| --- | --- | --- | --- | --- |
+| partA | 91 | 288.5 bits | `yellowblueprimes` (128 bits) | 44.4% |
+| partC | 570 | 1806.9 bits | `yinyang` (56 bits) | **3.1%** |
+
+A creator who packs four carriers to 99–100% does not then spend 570 symbols on
+a seven-letter word. The mapping cannot be right.
+
+**But the same arithmetic says what they do hold.** At the established
+efficiency:
+
+    partA  ->  ~36 bytes of payload
+    partC  -> ~226 bytes of payload
+
+Neither is an English word. partA at ~36 bytes is 32 + 4 — the shape of a key
+plus a short trailer, the same shape as the 103×103 output's HALF/BETTER/TRAIL.
+partC at ~226 bytes is large enough to be a record pair or an encrypted object
+in its own right.
+
+That reframes both runs: they are not instructions, they are **data**, and every
+attempt so far to read them as words was looking for the wrong size of thing.
+
+### Validator, fourth time
+
+The sweep's test was `wc>=3 or pr>0.93 or (padok and pr>0.6)`. Against the
+verified SalPhaseIon plaintext: printable 0.39, words 0 — it returns **False**.
+The correct password, had it been in the candidate list, would have printed
+nothing. Re-run here with a padding + known-plaintext-hash validator, the
+positive control fires immediately and correctly identifies the real password.
