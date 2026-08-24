@@ -855,3 +855,42 @@ hits.** Best lowercase decode 18.9% against a 10.2% random baseline.
 
 That exhausts the productive order identified in round 17 (transform → then
 zero) across every rule the creator's authenticated hint supports.
+
+## Round 19: A/C as key material
+
+`keyhunt.py` — the entropy bound rules out A/C bijectively decoding to *English*,
+but says nothing against them decoding to a **key**: 32 bytes of AES key is
+supposed to be ~8 bits/byte. Testing these runs for readable output was testing
+for the wrong thing.
+
+Direct key injection needs no IV guess for rejection: in CBC the final block
+decrypts as `D(C_n) XOR C_{n-1}`, which never touches the IV, so the PKCS#7
+oracle costs one AES block operation. Every digit assignment × every 32-byte
+window of the decoded payload, against the three authentic blobs:
+**15,225,840 key trials, 59,637 padding-valid against 59,476 expected by
+chance.** Nothing.
+
+That test was structurally weak, though, and the reason matters: **all four
+blobs are open.** Their keys are known and none is an A/C decode, so no
+A/C-derived key can ever validate against them. Every transform tested against
+those blobs is hammering a door already ajar.
+
+`prizehunt.py` — **written, not yet run.** The one test needing no locked door:
+does A or C decode directly to the *prize private key*? Every digit assignment ×
+every 32-byte window × both point serialisations, checked against the prize
+HASH160 `a9553269572a317e39f0f518cb87c1a0ee1dbae4`, including the ELITE ±1
+ternary-shift variants. With `coincurve` at ~26,000 keys/s, partA is ~3 minutes
+and partC ~90. It is the literal reading of the creator's claim that everything
+needed is on the page and that what you want is the private key — and it either
+finds the key or closes "the key is stored in A/C" permanently.
+
+### A note on 180° antisymmetry
+
+`sum(p − q)` over a grid and its 180° rotation is **identically zero** for any
+grid whatsoever — the rotation is an involution, so each pair contributes
+`(x−y)` and `(y−x)`, which cancel. Likewise "1-cells whose partner is 0" is just
+mismatches ÷ 2 by construction. Neither figure can distinguish the puzzle from
+noise. The one informative number, the mismatch count on the 14×14 matrix, is
+98 of 196 against **98.0 expected** for a random binary grid with 101 ones —
++0.01σ. Six random grids reproduce the whole pattern, including a random 7×13
+that also gives exactly 80 mismatches, matching partA.
