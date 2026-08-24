@@ -248,3 +248,53 @@ coordinate/selector reading stays compatible with the vanity constraint, while
 XOR-reduction-to-an-apex does not -- and indeed the reported apex
 `683c4eec...73a9` fails against the prize HASH160, exactly as the vanity
 argument predicts it must.
+
+## Round 5: the 79-byte record repeats — and it beats 103×103
+
+With the Cosmic plaintext verified and held locally (`cosmic.dec`), the two
+competing readings of it can finally be compared on evidence.
+
+### The record format recurs across two independent blobs
+
+    SalPhaseIon plaintext:  32 + 32 + 15 = 79     K_C1, K_C2, E_C
+    Cosmic plaintext:       32 + 32 + 15 = 79     K_B1, K_B2, E_B
+                            32 + 32 + 15 = 79     K_H1, K_H2, E_H
+                            1169 remaining
+
+A record layout appearing three times across two separately obtained ciphertexts
+is structural corroboration of exactly the kind the 103×103 construction lacks.
+
+### The two readings disagree, and one of them has to go
+
+| | "half" | "better half" |
+| --- | --- | --- |
+| 103×103 → base38 | `0423d911…` | `48cc46e6…` |
+| 79-byte records | `db9ccfe9…` (K_H1) | `44d19415…` (K_B1) |
+
+Different values. Both cannot be the intended pair. The record layout is
+corroborated across two blobs; 103×103 has no corroboration and fails its null
+test — its "span 38" is the *median* span for random data (round 4). Weight
+belongs on the records. 103×103 reproduces faithfully from the real plaintext,
+but reproducing an arithmetic pipeline is not evidence the pipeline was intended.
+
+### Negative results this round
+
+- **No derivation of the working Cosmic key** `6ac438fa…` from `K_C1`, `K_C2`,
+  `K_S1`, `K_S2`, `E_C` or `E_S`: XOR of every subset, SHA-256 of every ordered
+  concatenation, and `EVP_BytesToKey` over concatenations in raw/hex/HEX under
+  both digests. The key decrypts the blob; its published provenance still does
+  not reproduce it.
+- **None of the ten recovered scalars reaches the prize HASH160** — `K_C1/2`,
+  `K_B1/2`, `K_H1/2`, `K_S1/2` and the two 103×103 values, compressed and
+  uncompressed — nor do pairwise XOR, modular sum, difference, or SHA-256 of the
+  half/better-half keys.
+- The 1169-byte tail is 7.84 bits/byte over 250 distinct values: encrypted, not
+  encoded.
+
+### A validator note, twice learned
+
+A content filter keyed on printability, word counts or base58 ratio **rejects
+the correct Cosmic plaintext** (printable 0.40, words 0, base58 0.24). Any sweep
+using one cannot succeed even when the password is in its candidate set. These
+payloads are binary key material. Validate on a plaintext hash or a structural
+invariant, never on readability.
