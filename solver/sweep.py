@@ -9,6 +9,25 @@ Two-stage filter:
 """
 import hashlib, re, sys, time
 import validate
+
+# Plaintext commitments published as reproducibility anchors. Unverified -- they
+# come from the same issue tracker that produced the fabricated #69 -- so they are
+# an ADDITIONAL trigger, never a replacement for the existing filters. If they are
+# wrong we lose nothing; if they are right they close a real hole, because until
+# now a hit whose plaintext was binary rather than text would have been silently
+# discarded by the printability filter.
+ANCHORS = {
+    "salphaseion-79B": "e2590f1581c75812c6848776f2979d3bf272a75cb95063f1b177a2bbf4992cbd",
+    "cosmic-1327B":    "4f7a1e4efe4bf6c5581e32505c019657cb7b030e90232d33f011aca6a5e9c081",
+}
+
+
+def anchor_hit(pt):
+    h = hashlib.sha256(pt).hexdigest()
+    for name, want in ANCHORS.items():
+        if h == want:
+            return name
+    return None
 from gsmg import Blob, SALPHASEION_B64
 
 BLOB = Blob(SALPHASEION_B64)
@@ -55,7 +74,11 @@ def run(stream, label, blob=BLOB, out=sys.stdout):
                 if pt is None:
                     continue
                 pad += 1
-                if plausible(pt):
+                anc = anchor_hit(pt)
+                if anc:
+                    print(f"  *** ANCHOR {anc} base={base!r} form={tname} kdf={md}",
+                          file=out, flush=True)
+                if anc or plausible(pt):
                     hits.append((base, tname, md, pt))
                     print(f"  !!! HIT base={base!r} form={tname} kdf={md}\n"
                           f"      plaintext: {pt!r}", file=out, flush=True)
