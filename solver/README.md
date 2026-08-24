@@ -158,3 +158,53 @@ word-coverage segmentation, calibrated on this puzzle's own plaintexts:
 
 Threshold 0.28. Re-scored, every checkerboard and Polybius result falls to
 0.0-0.2. Any future search should use this scorer, not letter frequency.
+
+
+## Round 3: calibrated against the creator's own blobs
+
+The Phase 2 and Phase 3 ciphertexts (archived in `source/`) have *known*
+passwords, which makes them the calibration data this harness never had.
+
+**The puzzle uses the SHA-256 KDF, not MD5.** Phase 2 decrypts to its documented
+plaintext under `sha256("causality")` with the SHA-256 KDF and fails padding
+under MD5; Phase 3 does the same under its seven-part password. `calibrate.py`
+asserts both. Every sweep before this had to hedge across both KDFs; future ones
+get double the throughput. Past negative results stand -- both were tested, so
+SHA-256 was always covered.
+
+**The seven-part concatenation reproduces its documented digest exactly**, which
+confirms the creator's assembly convention: parts joined with no separator, case
+preserved, punctuation and spaces kept where the source has them.
+
+### The first byte is not free
+
+Under this block's decode convention (digits -> decimal integer -> base 16 ->
+ASCII), the first byte of the output is fixed by the *digit count*, because
+`hex()` pads to an even length and the leading bits follow from log2(N):
+
+| digits | reachable first bytes | can start with a letter? |
+| --- | --- | --- |
+| 570 (partC) | 5-45 | **no** |
+| 91 (partA) | 8-78 | **no** |
+| 63 (`lastwordsbeforearchichoice`) | 1-255 | yes |
+| 29 (`thispassword`) | 1-255 | yes |
+
+Both solved segments are short. partA and partC, read as single numbers, cannot
+begin with a letter under *any* digit mapping. The whole-string reading was
+never viable -- they have to be chunked, like the z-separated segments were,
+except partA and partC carry no `z` to chunk them on.
+
+`chunkhunt.py` therefore sweeps chunked decodes: every digit mapping x both digit
+sets x chunk sizes 2-60, filtered on the leading chunk, for 42,819,840
+(mapping, size) pairs per run. Zero decoded to lowercase throughout, for either
+run. Uniform chunking is out; whatever splits them is irregular.
+
+### Correction
+
+An earlier background sweep (partA keying partC across all 9! alphabet
+orderings) reported zero, and that zero was meaningless: its fast filter
+required the first two decoded bytes to be lowercase letters, which the table
+above shows is impossible at 570 digits. The `fastdecode.py` arithmetic is
+sound and validated -- it was anchored on a criterion that cannot hold. Any
+re-run must filter on printable ASCII across several bytes, not leading
+lowercase.

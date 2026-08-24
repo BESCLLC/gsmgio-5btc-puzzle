@@ -54,21 +54,22 @@ def convention(s):
         return b''
 
 
-results = []
-for kname, key in KEYS:
-    for op in OPS:
-        for target, tname in ((C, "partC"), (C[::-1], "partC-rev")):
-            s = combine(target, key, op)
-            bs = convention(s)
-            if not bs:
-                continue
-            frac = sum(1 for b in bs if b in LOWER) / len(bs)
-            results.append((frac, kname, op, tname, bs))
+if __name__ == "__main__":
+    results = []
+    for kname, key in KEYS:
+        for op in OPS:
+            for target, tname in ((C, "partC"), (C[::-1], "partC-rev")):
+                s = combine(target, key, op)
+                bs = convention(s)
+                if not bs:
+                    continue
+                frac = sum(1 for b in bs if b in LOWER) / len(bs)
+                results.append((frac, kname, op, tname, bs))
 
-results.sort(reverse=True)
-print(f"{len(results)} keyed streams tested (natural mapping a=1..i=9)")
-for frac, kname, op, tname, bs in results[:6]:
-    print(f"  {frac:5.1%}  key={kname:14s} op={op:4s} target={tname}")
-    print(f"         {bs[:90]!r}")
-print(f"\nbest lowercase fraction: {results[0][0]:.1%} "
-      f"(a real decode is ~100%, cf. digitmap.py's 75% threshold)")
+    results.sort(reverse=True)
+    print(f"{len(results)} keyed streams tested (natural mapping a=1..i=9)")
+    for frac, kname, op, tname, bs in results[:6]:
+        print(f"  {frac:5.1%}  key={kname:14s} op={op:4s} target={tname}")
+        print(f"         {bs[:90]!r}")
+    print(f"\nbest lowercase fraction: {results[0][0]:.1%} "
+          f"(a real decode is ~100%, cf. digitmap.py's 75% threshold)")

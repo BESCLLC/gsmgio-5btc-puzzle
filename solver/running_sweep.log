@@ -13,3 +13,4 @@
          b'\x1a\x94pV~K\x9f*_\x0f\x93B\xc9h\x16}\xbb\xaaT^\xebPQ\x13IEF\xde\x9c.1\xe9\x06\xff\xc8\xff\xcf\x1eK"\xd5\xd1x~\xc3\xe8k7\xdb\xbegS\xb6`\x15\xe0\x81\x14\x18F\xdc\x12ed\xe0bm\x13\xc0\xfe7:\xac3\tRw]\xe4\xea\xc3D),\x01=\x056Q\x01'
 
 best lowercase fraction: 15.2% (a real decode is ~100%, cf. digitmap.py's 75% threshold)
+[running-key] 50,077,440 combinations, 0 past the fast filter (0.00%), 0 decodes above 75% lowercase, 422s

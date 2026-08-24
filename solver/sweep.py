@@ -12,7 +12,12 @@ import validate
 from gsmg import Blob, SALPHASEION_B64
 
 BLOB = Blob(SALPHASEION_B64)
-DIGESTS = ("md5", "sha256")            # OpenSSL 1.0 default vs 1.1+ default
+# Calibrated, not assumed: Phase 2 decrypts under sha256("causality") with the
+# SHA-256 KDF and fails padding under MD5, and Phase 3 does the same under its
+# seven-part password. The creator used OpenSSL 1.1+ defaults throughout, so
+# every future sweep gets double the throughput by dropping MD5. (Past results
+# stand -- both KDFs were tested, so SHA-256 was always covered.)
+DIGESTS = ("sha256",)
 PRINTABLE = set(range(0x20, 0x7f)) | {0x09, 0x0a, 0x0d}
 
 
