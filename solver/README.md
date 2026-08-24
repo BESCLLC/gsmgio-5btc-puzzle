@@ -208,3 +208,43 @@ above shows is impossible at 570 digits. The `fastdecode.py` arithmetic is
 sound and validated -- it was anchored on a criterion that cannot hold. Any
 re-run must filter on printable ASCII across several bytes, not leading
 lowercase.
+
+## Round 4: the Chain-4 XOR mask is a tautology
+
+A widely repeated argument holds that the mask `b657264f2f6e6921` "drops directly
+out of the ciphertext under the already-established OpenSSL grammar": take the
+first eight unexplained bytes `e5364a3b4a0a367e`, XOR with `Salted__`
+(`53616c7465645f5f`), obtain the mask, apply it, and a literal `Salted__` header
+appears followed by a salt and 1152 bytes of "perfectly block-aligned"
+ciphertext.
+
+That argument is circular. The mask is *defined* as `first8 XOR "Salted__"`, so
+`first8 XOR mask == "Salted__"` holds by algebra for any eight bytes in
+existence. And 1168 - 16 = 1152 = 72x16 regardless of input, so the block
+alignment is arithmetic, not evidence.
+
+`maskdemo` in the commit log runs the identical procedure on random noise: every
+trial yields a `Salted__` header, a plausible-looking salt, and exactly 1152
+bytes at `1152 % 16 == 0`. Noise passes this test 100% of the time.
+
+This does not prove the Chain-4 object is not real. It proves the argument
+offered for it carries no information. The only thing that would settle it is a
+password that decrypts a blob we hold.
+
+### The 35x32 coordinate fit, quantified
+
+The completed control table `# -4 2 32 12 4 27 0 2 -16 15 #` read as five
+(block, byte) pairs against a 35x32 field does fit: block slot accepts -35..34,
+byte slot accepts 0..31, and all five pairs are legal. Under a null that
+shuffles the same ten values into five random pairs, **8.4%** of arrangements
+fit. That is roughly one in twelve -- suggestive, not exceptional, and the
+pairing was chosen after the target dimensions were known.
+
+### A fair refinement of the vanity-address argument
+
+Selection is not derivation. A vanity key cannot be *computed* from the
+artifacts, but it can be *stored* in a payload and *selected* out of it. So a
+coordinate/selector reading stays compatible with the vanity constraint, while
+XOR-reduction-to-an-apex does not -- and indeed the reported apex
+`683c4eec...73a9` fails against the prize HASH160, exactly as the vanity
+argument predicts it must.
