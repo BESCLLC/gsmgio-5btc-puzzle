@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+# transient sweep logs -- these are written while jobs run, so tracking them
+# leaves the tree permanently dirty. Results live in README.md and commits.
+*.log
+*.err
