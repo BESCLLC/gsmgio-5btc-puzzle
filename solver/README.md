@@ -956,3 +956,59 @@ Plain ASCII: *"Happy new year! Make the best of everything. Oh, and here's a
 That last one matters: as of 2025-04-28 the creator states **nobody has reached
 yinyang**. Whatever yinyang is, it sits beyond where anyone has got — which is
 consistent with the missing door this repo located from key-derivation failures.
+
+## Round 21: `yellowblueprimes` is solved
+
+The first creator token in this investigation to decode to a creator-**authenticated
+value**.
+
+### The image has four colours, not two
+
+Sampling `puzzle.png` at the 14×14 cell centres (the file is 1048×1556, so the
+grid is the top square region — sampling the whole image gets the caption too):
+
+    BLACK  x87     WHITE  x85     BLUE  x15     YELLOW  x9
+
+The README's "black/blue = 1, yellow/white = 0" flattens four colours into two.
+Blue and yellow are a **separate, smaller signal** carried inside the bit matrix.
+
+### The derivation
+
+    YELLOW =  9 cells  ->  primes <= 9  = 2,3,5,7            ->  sum 17
+    BLUE   = 15 cells  ->  primes <= 15 = 2,3,5,7,11,13      ->  sum 41
+                                                             ->  (-41, -17)
+
+Jrk, 2020-02-22: *"Only -41,-17 matters"* — the Decentraland coordinates leading
+to the audio file and `HASHTHETEXT`. **Exact match.**
+
+Every input is verified from primary data, the operation is the creator's own
+vocabulary (`yellow` `blue` `primes`), and the output is a statement he
+authenticated three years before the token was published. `yellowblueprimes` is
+an **instruction**, not a string partA decodes to — which is consistent with
+round 20's finding that partA cannot produce it under any digit assignment.
+
+### `keYmgma`, null-tested
+
+C as 30×19, `a=1..i=9`, row sums, keep primes, read as **ASCII** (not mod 26):
+
+    prime rows 3,6,10,20,23,27,28  ->  107 101 89 109 103 109 97  ->  keYmgma
+
+Against 30,000 shuffles of partC's own multiset at the same layout:
+
+| | rate |
+| --- | --- |
+| contains `key` (any case) | 0.84% |
+| starts with `ke` | 2.53% |
+| contains exact `keY` | 0.840% |
+
+Suggestive at ~1 in 120, and materially better than the mod-26 reading. **But
+the capitalisation is not evidence**: ASCII 121 (`y`) is composite and 89 (`Y`)
+is prime, so any prime-filtered output showing a `y` at all must show it
+uppercase. That is forced by the filter, not designed.
+
+The companion under `a=0..i=8` gives `ICS=a`, reversed `a=SCI`. Jrk's *"First or
+zero"* (msg 4105) may distinguish the two mappings. Unresolved.
+
+`A` as 7×13 under `a=0..i=8` gives row sums `[42, 52, 55, 47, 36, 50, 49]` — the
+first being 42, which Jrk posted alongside "theory of everything". One of seven
+values; weak on its own.
