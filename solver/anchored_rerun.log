@@ -10,3 +10,5 @@
   ... 20,000,000 decryptions, 0 hits
   ... 22,000,000 decryptions, 0 hits
 [hash-the-runs] 23,224,320 decryptions, 0 plausible plaintexts
+[mapgrid] 29,030,400 decryptions, 0 plausible plaintexts
+42 decryption attempts with the issue-#69 master key, 0 produced text

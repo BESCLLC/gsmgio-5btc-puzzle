@@ -17,7 +17,7 @@ import validate
 # now a hit whose plaintext was binary rather than text would have been silently
 # discarded by the printability filter.
 ANCHORS = {
-    "salphaseion-79B": "e2590f1581c75812c6848776f2979d3bf272a75cb95063f1b177a2bbf4992cbd",
+    "salphaseion-79B": "1449a2178eea7c0e3fabac8c1ad2afa294be4fc1800c594a025a056e88c626bf",
     "cosmic-1327B":    "4f7a1e4efe4bf6c5581e32505c019657cb7b030e90232d33f011aca6a5e9c081",
 }
 
@@ -36,7 +36,11 @@ BLOB = Blob(SALPHASEION_B64)
 # seven-part password. The creator used OpenSSL 1.1+ defaults throughout, so
 # every future sweep gets double the throughput by dropping MD5. (Past results
 # stand -- both KDFs were tested, so SHA-256 was always covered.)
-DIGESTS = ("sha256",)
+# CORRECTION: Phase 2 and Phase 3 use the SHA-256 KDF, but the SalPhaseIon blob
+# decrypts under MD5. The creator's tooling is not uniform across pages, so
+# calibrating on phases 2/3 and dropping MD5 was wrong -- it would have made
+# every later sweep blind to the very answer we were hunting. Both, always.
+DIGESTS = ("sha256", "md5")
 PRINTABLE = set(range(0x20, 0x7f)) | {0x09, 0x0a, 0x0d}
 
 
