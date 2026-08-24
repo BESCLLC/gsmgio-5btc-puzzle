@@ -347,3 +347,55 @@ non-contiguous bytes — which is exactly what a selector would do.
 
 The mask covers 1168 of the tail's 1169 bytes. The final byte of `cosmic.dec` is
 used by nothing in any construction proposed so far.
+
+## Round 7: the chain verified end to end — and the gap located
+
+### The b45a blob was in this repo all along
+
+It is the trailing base64 inside the **Phase 3.2 plaintext**, printed in the
+README since 2020: `U2FsdGVkX1+0Wl49gnWTyiim…`, salt `b45a5e3d827593ca`, 96 bytes.
+No archive hunt was needed.
+
+That makes the whole chain independently reproducible from primary artifacts:
+
+    SalPhaseIon blob (from page source)
+      + password "matrixsumlist enter lastwordsbeforearchichoice thispassword matrixsumlist"
+      + MD5 KDF
+      -> 79B = K_C1 || K_C2 || E_C
+    WIF(K_C1, uncompressed) = 5K2byJMssxFKuTgnk9YQjpBz5FhkwwF2LaZoAyTus8HjGEpz8AT
+      -> opens the b45a blob, MD5 KDF
+      -> 79B = K_S1 || K_S2 || E_S
+    Cosmic blob + key 6ac438fa… / IV c6ff2e39…
+      -> 1327B = K_B1 K_B2 E_B | K_H1 K_H2 E_H | 1169B tail
+    tail masked + key 54fc3947… / IV 30efcf17…
+      -> 1151B = 31B header + 35 x 32B
+
+Every step verified locally against ciphertext transcribed from the page source.
+
+### The gap
+
+The chain rule is *the first key of each record, as a WIF, opens the next blob*.
+It holds for `K_C1 -> b45a`. It does **not** hold for `K_S1 -> Cosmic`: neither
+`K_S1` nor `K_S2`, compressed or uncompressed, under either KDF, produces the
+working Cosmic key `6ac438fa…`.
+
+So the chain is not `Sal -> b45a -> Cosmic`. It is:
+
+    Sal -> b45a -> [ MISSING BLOB ] -> Cosmic
+
+and that missing blob is what `WIF(K_S1)` opens. This also explains why the
+Cosmic and Chain-4 key derivations have never reproduced: their published
+provenance skips a link that nobody has published.
+
+**What to hunt for:** a `Salted__` blob, probably 96 bytes like the other two,
+that decrypts under `WIF(K_S1)` with the MD5 KDF to a 79-byte record.
+
+### Correction
+
+Last round I called the Chain-4 31-byte header "structured" on the basis of its
+entropy (4.95) against the blocks' (7.83). That comparison is invalid: Shannon
+entropy is bounded by log2(n), and log2(31) = 4.95 — the header's figure is
+simply the maximum a 31-byte sample can show, meaning only that all 31 bytes are
+distinct (P ≈ 0.15 for random bytes). Both regions are consistent with random.
+Further, 28 of the 31 values exceed 34, so they cannot be block indices into a
+35-block field. The header is not evidently a selector table. Withdrawn.
