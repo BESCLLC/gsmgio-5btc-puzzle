@@ -535,3 +535,48 @@ verified SalPhaseIon plaintext: printable 0.39, words 0 — it returns **False**
 The correct password, had it been in the candidate list, would have printed
 nothing. Re-run here with a padding + known-plaintext-hash validator, the
 positive control fires immediately and correctly identifies the real password.
+
+## Round 11: "key eyes" reproduced from primary data — and null-tested
+
+The creator hint *"prime numbers are required to proceed"* + *"some characters
+need to be zeroed out"* is not metaphor. partA and partC use `a-i` only; the
+z-segments that decoded use `a-i` **and `o` = 0**. The missing zeros are the
+literal missing ingredient, and primes are said to choose them.
+
+This also dissolves the round-6 objection: a 570-digit number can never decode
+to a leading letter, but zeroing leading digits shortens the effective number,
+so that constraint does not apply once zeros enter.
+
+### Prime-zeroing: negative
+
+`zeroing.py` applies ten rules — zero or drop, at prime positions (0- and
+1-indexed), at composite positions, at prime digit values, at composite values —
+then decodes with the block's own convention. Best result 19% lowercase against
+~10% for random bytes. Nothing. (Worth noting: `val-composite zero` on partC
+yields **236 bytes**, matching the ~226–236 predicted by the round-10 efficiency
+argument, so the sizing model holds.)
+
+### The community's "key eyes", reproduced independently
+
+Laying partC out as **30 × 19**, taking row sums, keeping the primes, and
+mapping a1z26 mod 26:
+
+    sums   = [92, 86, 102, 107, 80, 87, 101, 105, ...]
+    primes = [107, 101, 89, 109, 103, 109, 97]
+    ->  c w k e y e s        "key eyes"
+
+Reproduced here from the page-source symbols, not taken from a write-up.
+
+**Null test** (20,000 shuffles of partC's own multiset, same layout):
+
+| | rate |
+| --- | --- |
+| output contains `key` or `eye` | 3.03% |
+| output contains `keyes` | **0.010%** |
+| mean output length | 6.8 (real: 7) |
+
+The exact substring is ~1 in 10,000 — but across 12 layouts × 2 alphabet
+mappings the effective rate is nearer 1 in 400. Suggestive, and consistent with
+the creator's *"it's in front of your eyes"*. It is a **meta-hint, not a
+cryptographic result**: it confirms partC is the right object and the prime
+row-sum reading is on the right track, and it yields no key material.
