@@ -684,3 +684,55 @@ characters before/after each i, on both runs: everything at the 10.2% lowercase
 / 37.1% printable random baseline. One incidental confirmation — partA with its
 i's deleted decodes to exactly **36 bytes**, matching the round-10 capacity
 prediction.
+
+## Round 15: the 91 → 121 prime-reinsertion construction
+
+The best-formed hypothesis anyone has produced, and it reproduces exactly.
+
+`N − π(N) = 91` has the **unique** solution `N = 121`, since π(121) = 30 and
+121 is the 91st non-prime. Reinserting 30 zeros at prime positions gives an
+11×11 grid; read as base 9 with `i = 0, a..h = 1..8` it yields exactly 48 bytes —
+the size of an AES-256 key plus IV:
+
+    53fb4ae40acf9d781932e8e2f8ac785b 0f5f2cc329e5b4822570ce79dc031f71
+    b098c4986abcc0c6da62060a42ef68e1
+
+Rebuilt independently here, byte-identical. What distinguishes this from every
+other construction in this file is that **all its ingredients predate the
+output**: 91 is partA's real length, "REINSERTING THE PRIME BASICS" is explicit
+Architect text, the zero-character hint is the creator's, and 121 = 11² is a
+consequence rather than a chosen target.
+
+### What it is not
+
+- It derives **neither** unexplained key. Hamming distance from `bs[0:32]` to the
+  Chain-4 key is 124/256 bits (48.4%) and to the Cosmic key 144/256 (56.2%) —
+  both at the 50% random line. No XOR, SHA-256 or EVP relation found either.
+- `121 = 11²` is ~1 in 22 given the square density near 121 — notable, not
+  miraculous, and since 91 was the creator's choice a designed 91 produces it by
+  construction.
+- The **80 i's** (5 + 75) against 80-byte ciphertexts is +0.81σ from the uniform
+  base-9 expectation of 73.4. A coincidence of counts.
+
+### A as an operator on the VIC answer
+
+Tested directly, since mutual information only covers A *encoding* VIC, not A
+*acting on* it. Shift ciphers (`VIC±A`, `A−VIC`) across four digit maps: best
+score 0.087 against 0.28 for English. Selector readings (keep VIC letters where
+A holds symbol X): the `A=='e'` selection scores 0.340, which **fails its null** —
+random 18-letter subsequences of VIC score ≥ 0.340 **27.5% of the time**, because
+selecting from an English sentence preserves English letter frequencies. It
+segments as `nrc i h pie y lan hat ole`.
+
+Note on the scorer: the 0.28 threshold was calibrated on 26–79 character
+plaintexts and does **not** transfer to short fragments. Any selector result must
+be scored against subsequences of the same source and length.
+
+### Why this construction cannot currently be falsified
+
+All four blobs in the chain are open. A correct 48-byte KEY‖IV would have
+**nothing left to unlock**. Testing it against Cosmic — as was done — tests an
+already-open door and can only fail. So this is *untested*, not disproved, and
+it becomes testable the moment the missing blob between b45a and Cosmic appears.
+The 121 hypothesis and the missing-link gap are complementary: if that blob
+turns up, these 48 bytes are the first thing to try on it.
