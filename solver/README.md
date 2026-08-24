@@ -615,3 +615,47 @@ un-zeroed reading is done.
 The only positive signal partC has ever produced is a seven-character meta-hint.
 Everything that would constitute a decode has been ruled out across its natural
 search space.
+
+## Round 13: three Telegram claims settled
+
+**Jerry's 91 = 91.** The phase-3.2.2 plaintext stripped —
+`INCASEYOUMANAGETOCRACKTHISTHEPRIVATEKEYSBELONGTOHALFANDBETTERHALFANDTHEYALSONEEDFUNDSTOLIVE`
+— is exactly 91 characters, and partA is exactly 91 symbols. Tempting, and
+decisively wrong.
+
+A 26→9 substitution is many-to-one, so different letters may share a symbol. But
+the same *plaintext* letter must always give the same *cipher* symbol. It does
+not: 17 of 21 letters map to multiple symbols, and `E` maps to **seven of the
+nine**. partA is not a substitution of that phrase.
+
+Nor is it positional. `A ≡ PT mod 9` agrees on 10/91 — chance is 11%. The
+Vigenère difference stream `(PT − A) mod 26` shows **25 distinct values of 26**
+and repeats at no period below 25. The length match is a coincidence of message
+length.
+
+**Pomyk's "many b's in prime positions."** Resampled null, 20,000 draws:
+
+| | b's | at prime positions | expected | p |
+| --- | --- | --- | --- | --- |
+| partA 1-indexed | 25 | 7 | 6.6 | 0.515 |
+| partA 0-indexed | 25 | 8 | 6.6 | 0.311 |
+| partC either | 49 | 11 | 8.9 | 0.27 |
+
+No clustering. The intuition that produced "primes are involved" came from the
+creator's own hint, not from this distribution.
+
+**The base-10 values circulating are wrong.** Under `a=1..i=9`:
+
+    partA = 4229262833257298125259825775752522758852886212648256...  (91 digits, composite)
+    partC = 6154775546324128877314365447647279711547791615378773...  (570 digits, composite)
+
+Neither matches `4009060833…` nor the `2387909401…` that was primality-tested in
+the thread. That discussion was reasoning about a different integer.
+
+### The one surviving idea
+
+nieods' *"dbbib is used to decode faed"* — partA keying partC — remains open, and
+is the item outstanding from the round-6 retraction. `run_running2.py` sweeps it
+properly: all 9! alphabet orderings × 22 keys from the 7×13 grid × 3 combining
+ops × partC forwards and reversed, scoring the **entire** decode rather than a
+structurally impossible leading-byte criterion.
