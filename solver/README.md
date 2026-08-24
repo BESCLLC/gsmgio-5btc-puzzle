@@ -298,3 +298,52 @@ the correct Cosmic plaintext** (printable 0.40, words 0, base58 0.24). Any sweep
 using one cannot succeed even when the password is in its candidate set. These
 payloads are binary key material. Validate on a plaintext hash or a structural
 invariant, never on readability.
+
+## Round 6: Chain-4 verified — and the prize key is not stored in anything we hold
+
+The b45a record closes the chain's shape. Four 79-byte records now span three
+independently obtained ciphertexts:
+
+    SalPhaseIon (salt 3ab58534)  ->  K_C1 K_C2 E_C
+    b45a        (salt b45a5e3d)  ->  K_S1 K_S2 E_S      opened by K_C1 as a WIF
+    Cosmic      (salt 2d3f6fe0)  ->  K_B1 K_B2 E_B | K_H1 K_H2 E_H | 1169 tail
+
+### Chain-4 exists
+
+The mask *argument* remains worthless — random noise yields a `Salted__` header
+and 1152 aligned bytes 100% of the time. But the mask *object* is real, and the
+decryption proves it where the header never could: applying the reported key/IV
+to `masked[16:]` gives 1151 bytes with **valid padding** and
+`sha256 = e4269ed5fbb202a81e5e1aa6b5190fdd1ea126b2c8547ea7cdbdf45387ea135b`,
+the published anchor. Saved as `chain4.dec`. `1151 = 31 + 35x32`, and the
+XOR-triangle apex reproduces exactly as `683c4eec…73a9`.
+
+Both things were true at once: the argument carried no information, and the
+object it argued for exists.
+
+### The derivation story still does not reproduce — for the second time
+
+`E_C || E_S || E_B[:2]` reproduces byte-exactly as the 32-byte password, and the
+masked salt `5bbd88ac32481bca` reproduces too. But `EVP_BytesToKey` over that
+password does **not** yield the working key `54fc3947…`. 54 variants tried —
+raw/hex/HEX password, six salts, three digests. This is the same pattern as the
+Cosmic key `6ac438fa…`: the key is correct, and the published account of where
+it comes from does not produce it.
+
+### The strongest new constraint
+
+The prize address is a vanity address, so its key must be *stored*, not derived.
+So slide a 32-byte window across every plaintext we hold — SalPhaseIon (79B),
+Cosmic (1327B), Chain-4 (1151B) — and test each offset as a private key:
+
+**2,464 windows, no prize.** None of the 35 Chain-4 blocks either, nor the
+31-byte header padded either way, nor the apex.
+
+The prize key is therefore not stored verbatim anywhere in the recovered
+material. Either a further encrypted layer remains, or the key is assembled from
+non-contiguous bytes — which is exactly what a selector would do.
+
+### Loose end
+
+The mask covers 1168 of the tail's 1169 bytes. The final byte of `cosmic.dec` is
+used by nothing in any construction proposed so far.
