@@ -434,3 +434,56 @@ Self-tested: it recovers Phase 2 at 656 B, Cosmic at 1328 B, Phase 3.2 at
 
 **Target:** a blob whose ciphertext is 80 bytes (5 blocks), opening under
 `WIF(K_S1)` with the MD5 KDF.
+
+## Round 9: the mechanism changes after SalPhaseIon — token hunting cannot reach Cosmic
+
+A decoded creator hint was reported as an ordered sequence: `yellowblueprimes`,
+`matrixsumlist`, `lastwordsbeforearchichoice`, `yinyang`.
+
+### yellowblueprimes has real numeric content
+
+The README's own additional hint reads *"Yellow has a number and so does Blue."*
+Counting the 14×14 matrix:
+
+    blue/black squares (1s) = 101   prime
+    yellow/white squares(0s)=  95   not prime (5 × 19)
+
+101 is both prime and the matrix total — so `matrixsumlist` and the blue count
+are the same number, and the next prime after 101 is 103, the modulus of the
+103×103 claim. That is a genuine thread, not a naive reading.
+
+### But the tokens cannot be Cosmic's password, and this is provable
+
+Two keys still have no reproducing derivation: Cosmic's `6ac438fa…` and
+Chain-4's `54fc3947…`. If the new tokens were the missing ingredient, they would
+close that gap. Searched:
+
+- all ordered subsets up to length 5 of a 19-token pool — 11,956,472 derivations
+- all **products** up to length 5 of a 16-token pool (repeats allowed, since the
+  verified SalPhaseIon password repeats `matrixsumlist`) — 13,421,760 derivations
+- each base string raw and SHA-256'd, under both KDFs, against both salts
+
+**Zero matches.** And the search is sound, because a positive control was
+included: the verified SalPhaseIon key. The sweep found it —
+`matrixsumlist + enter + lastwordsbeforearchichoice + thispassword +
+matrixsumlist`, MD5, raw — proving the method finds a real password of exactly
+this shape when one exists.
+
+### Why no token string will ever open Cosmic
+
+The chain changes mechanism after SalPhaseIon:
+
+    SalPhaseIon  <- opened by a TOKEN CONCATENATION
+    b45a         <- opened by WIF(K_C1), a key from the previous plaintext
+    Cosmic       <- key 6ac438fa…, provenance unknown
+    Chain-4      <- key 54fc3947…, provenance unknown
+
+Once the chain switches to *the first key of each record, as a WIF, opens the
+next blob*, the passwords stop being English at all — they are base58 key
+encodings. So searching keyword phrases against Cosmic is a category error, and
+the 12M + 13.4M derivations above confirm it empirically.
+
+One more constraint from the verified password: `yellowblueprimes` cannot precede
+`matrixsumlist` in the SalPhaseIon password, because that password is confirmed
+and begins with `matrixsumlist`. Whatever `yellowblueprimes` keys, it is not that
+step.
