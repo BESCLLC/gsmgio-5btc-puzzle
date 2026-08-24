@@ -842,3 +842,16 @@ What it leaves standing: fractionation as a *stage* before a **lossy** operation
 Selection, zeroing and aggregation are the only things that can lower entropy,
 and "some characters need to be zeroed out" is Jrk's authenticated wording.
 The productive order is therefore transform → **then** zero, not transform alone.
+
+## Round 18: fractionation × zeroing
+
+The combined search — 80 dihedral-fractionated streams × 9 zeroing rules
+(prime/composite position, prime/composite value, i→0, drop-i, none), decoded
+with the block's convention and tried as passwords against the four authentic
+blobs under both KDFs.
+
+**5,184 decryptions, 22 padding-valid against ~20 expected by chance, zero real
+hits.** Best lowercase decode 18.9% against a 10.2% random baseline.
+
+That exhausts the productive order identified in round 17 (transform → then
+zero) across every rule the creator's authenticated hint supports.
