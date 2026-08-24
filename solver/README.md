@@ -580,3 +580,38 @@ mappings the effective rate is nearer 1 in 400. Suggestive, and consistent with
 the creator's *"it's in front of your eyes"*. It is a **meta-hint, not a
 cryptographic result**: it confirms partC is the right object and the prime
 row-sum reading is on the right track, and it yields no key material.
+
+## Round 12: prime-structure zeroing exhausted
+
+Following the only creator-consistent signal (the 30×19 prime row-sums that give
+`keyes`), zeroing was driven by that structure rather than by position primality:
+keep/drop prime-sum rows, keep/drop prime-sum columns, concatenated or with the
+others zeroed, on both runs.
+
+**All negative.** The useful calibration: for uniform random bytes
+P(printable) = 95/256 = **37.1%** and P(lowercase) = 26/256 = **10.2%**. Every
+result landed at 33–43% printable and 0–18% lowercase — the null distribution.
+Quoting a printability figure near 0.37 as a partial result is quoting noise.
+
+Also closed: the `i=0, a=1..h=8` family. `digitmap.py`'s exhaustive sweep already
+covered it — its `012345678` digit set assigns 0 to each letter in turn across
+all 9! permutations, so every "treat one letter as zero" variant of the
+un-zeroed reading is done.
+
+### Standing state of partA / partC
+
+| fact | status |
+| --- | --- |
+| capacity | partA ~36 B, partC ~226 B of payload |
+| they are data, not words | established (carrier efficiency, round 10) |
+| whole-string decode, all 9! mappings | exhausted, negative |
+| uniform chunking 2–60, all mappings | exhausted, negative |
+| prime position/value zeroing | exhausted, negative |
+| prime row/column structure zeroing | exhausted, negative |
+| unkeyed 9×9 Polybius, VIC/checkerboard | negative |
+| running-key from partA over partC | negative (natural mapping) |
+| 30×19 prime row-sums | yields `keyes`, p ≈ 1/400 after search correction |
+
+The only positive signal partC has ever produced is a seven-character meta-hint.
+Everything that would constitute a decode has been ruled out across its natural
+search space.
