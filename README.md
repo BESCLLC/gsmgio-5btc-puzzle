@@ -339,6 +339,55 @@ digit 2: 4
 
 output: IN CASE YOU MANAGE TO CRACK THIS THE PRIVATE KEYS BELONG TO HALF AND BETTER HALF AND THEY ALSO NEED FUNDS TO LIVE
 
+### End-game status (what is actually left)
+
+The SalPhaseIon page ends in two OpenSSL `Salted__` blobs and neither password
+is known. Reproducible tooling for attacking them, plus the exact record of what
+has been ruled out, lives in [`solver/`](./solver).
+
+What the page hands you, in the order it presents it:
+
+| piece | encoding | reads |
+| --- | --- | --- |
+| partA, 91 symbols over `a–i` | **unknown** | — |
+| 104-bit `abba` run | `a=0 b=1`, 8-bit ASCII | `matrixsumlist` |
+| partC, 570 symbols over `a–i` | **unknown** | — |
+| 63 symbols over `a–i,o` | digits → decimal → base 16 → ASCII | `lastwordsbeforearchichoice` |
+| 29 symbols over `a–i,o` | same | `thispassword` |
+| trailer | plain | `shabef` (= `sha`+2+5+6 = sha256) `our first hint is your last command` |
+| 40-bit `abba` run inside the base64 | `a=0 b=1`, 8-bit ASCII | `enter` |
+
+`solver/numeric.py` reproduces both digit-segment solves exactly, which confirms
+the decode convention — and that same convention does **not** produce text from
+partA or partC. Those two runs are the only unspent constraint left on the page:
+everything else is a label or an instruction, not an answer.
+
+The small blob is 96 bytes — magic + salt + 5 AES blocks — so its plaintext is
+65–80 bytes, and a 64-character hex private key pads to exactly 80.
+
+Ruled out here (1,412,800 decryptions, zero plausible plaintexts): all 5,040
+orderings of the seven spelled-out tokens against 24 readings of `matrixsumlist`,
+ordered 1–4 token combinations from the wider pool, prior-phase passwords glued
+to each token, and XOR-chains of the token SHA-256 digests both as a password and
+injected directly as the AES key. Each candidate was tried raw, SHA-256'd, double
+SHA-256'd, against both the MD5 KDF (OpenSSL 1.0, i.e. what 2019 produced) and
+the SHA-256 KDF (OpenSSL 1.1+). The padding-survivor count matched `n/256` on
+every sweep, which is how you know the harness is sound and the zero is real.
+
+That is a small number next to the 335M+ candidates the wider community has
+published as negative results. Assembling the tokens is not the answer; partA and
+partC are where the remaining information is.
+
+**Against the page source** (archived in [`solver/source/`](./solver/source), and
+verified byte-identical to the transcription above): the same sweep now runs
+against the Cosmic Duality blob too — 1344 bytes, salt `2d3f6fe06dc950e6`, 83 AES
+blocks, plaintext 1313-1328 bytes — for 2,825,600 decryptions across both blobs,
+still zero. Additionally eliminated: all 725,760 digit assignments for the
+block's own decode convention applied to partA and partC (exhaustive, not
+sampled); "hash this page's text" in 12 readings; unkeyed 9x9 Polybius; and
+straddling checkerboard/VIC with the alphabet phase 3.2.2 already used.
+
+
 # Additional hints
 - There's a hint from the creator of the puzzle on Decentraland:
 ![decentraland image](./photo_2020-04-26_09-24-30.jpg)
